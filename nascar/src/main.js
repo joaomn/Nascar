@@ -1,6 +1,7 @@
 import {compile, createApp} from 'vue';
 import App from './App.vue';
 import PrimeVue from 'primevue/config';
+import router from './routes'
 
 
 import "primevue/resources/themes/lara-light-indigo/theme.css";
@@ -29,12 +30,14 @@ import RadioButton from 'primevue/radiobutton';
 import Sidebar from 'primevue/sidebar';
 import Rating from 'primevue/rating';
 import Menu from 'primevue/menu';
+import Divider from 'primevue/divider';
 
 
 
 const app = createApp(App);
 
 
+app.component('Divider', Divider)
 app.component('Rating', Rating)
 app.component('DataTable', DataTable)
 app.component('Column', Column)
@@ -54,7 +57,7 @@ app.component('RadioButton', RadioButton)
 app.component('Sidebar', Sidebar)
 app.component('Menu', Menu)
 
-
+app.use(router);
 app.use(ToastService);
 app.use(PrimeVue);
 app.mount('#app');

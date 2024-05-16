@@ -1,6 +1,6 @@
 <template>
     <div class="barra">
-        <img src="../assets/fundobrancologo.jpg" alt="" class="logo">
+        <img src="../assets/fundobrancologo.jpg" alt="" class="logo" >
 
     </div>
 </template>

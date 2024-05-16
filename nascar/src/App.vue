@@ -1,41 +1,57 @@
 <script setup>
 import BarraSuperior from './components/BarraSuperior.vue';
 import Menu from './components/Menu.vue';
+import Login from './components/Login.vue';
+
 </script>
 
 <template>
-  <div class="app">
+ 
+  <div class="app" >
     <BarraSuperior />
     <div class="menu-container">
       <Menu />
+      <Divider layout="vertical" />
+      <div class="content">
+       <RouterView />
+      </div>
+      
     </div>
+   
   </div>
+ 
 </template>
 
 <style scoped>
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
 .app {
   display: flex;
-  flex-direction: column; 
-  min-height: 100vh;
+  flex-direction: column;
+  min-height: 100vh; 
 }
 
 .menu-container {
-  flex: 1;
   display: flex;
-  justify-content: flex-start;
+  flex-direction: row;
+  min-height: 100vh;
 }
 
 .Menu {
-  min-width: 25%; 
+  width: 25%; 
   min-height: 100vh;
   position: relative;
-  z-index: 0;
+  z-index: 1;
+}
+
+.content {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.RouterView {
+  flex: 1;
+  min-height: 100vh;
 }
 
 .BarraSuperior {
