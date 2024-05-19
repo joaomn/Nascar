@@ -1,8 +1,10 @@
 import { createWebHistory, createRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 import Login from "../components/Login.vue";
 import App from "../App.vue";
 import Dashboard from "../views/Dashboard.vue";
 import Perfil from "../views/Perfil.vue";
+
 
 const routes = [
   {
@@ -10,20 +12,14 @@ const routes = [
     path: "/login",
     component: Login,
   },
-  {
-    name: "app",
-    path: "/main",
-    component: App,
-    meta: {
-      requiresAuth: false,
-    },
-  },
+  
+ 
   {
     name: "dashboard",
     path: "/dashboard",
     component: Dashboard,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
   {
@@ -31,7 +27,7 @@ const routes = [
     path: "/Perfil",
     component: Perfil,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true,
     },
   },
 ];
@@ -42,7 +38,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !localStorage.getItem("token")) {
+  const authStore = useAuthStore();
+  if (to.meta.requiresAuth && !authStore.isLoggedIn) {
     next({ name: "login" });
   } else {
     next();

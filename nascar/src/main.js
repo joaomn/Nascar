@@ -2,6 +2,7 @@ import {compile, createApp} from 'vue';
 import App from './App.vue';
 import PrimeVue from 'primevue/config';
 import router from './routes'
+import { createPinia} from 'pinia'
 
 
 import "primevue/resources/themes/lara-light-indigo/theme.css";
@@ -33,7 +34,7 @@ import Menu from 'primevue/menu';
 import Divider from 'primevue/divider';
 
 
-
+const pinia = createPinia()
 const app = createApp(App);
 
 
@@ -57,7 +58,10 @@ app.component('RadioButton', RadioButton)
 app.component('Sidebar', Sidebar)
 app.component('Menu', Menu)
 
+app.use(pinia);
 app.use(router);
 app.use(ToastService);
 app.use(PrimeVue);
+
+
 app.mount('#app');

@@ -1,8 +1,10 @@
 <script setup>
 import BarraSuperior from './components/BarraSuperior.vue';
 import Menu from './components/Menu.vue';
-import Login from './components/Login.vue';
+import BarraInferior from './components/BarraInferior.vue'
+import { useAuthStore } from "./stores/auth";
 
+const authStore = useAuthStore();
 </script>
 
 <template>
@@ -10,13 +12,13 @@ import Login from './components/Login.vue';
   <div class="app" >
     <BarraSuperior />
     <div class="menu-container">
-      <Menu />
+      <Menu  v-if="authStore.isLoggedIn"></Menu>
       <Divider layout="vertical" />
       <div class="content">
        <RouterView />
       </div>
-      
     </div>
+    <BarraInferior v-if="!authStore.isLoggedIn"></BarraInferior>
    
   </div>
  
@@ -56,9 +58,19 @@ import Login from './components/Login.vue';
 
 .BarraSuperior {
   position: fixed;
-  top: 0;
+  top: -50;
   left: 0;
   right: 0;
-  z-index: 1; 
+  z-index: 1;
+  box-shadow: -120px, 400px, -4px, -1px black; 
 }
+
+.BarraInferior {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
+
 </style>
