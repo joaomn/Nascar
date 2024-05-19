@@ -5,6 +5,7 @@ import router from './routes'
 import { createPinia} from 'pinia'
 
 
+
 import "primevue/resources/themes/lara-light-indigo/theme.css";
 import 'primevue/resources/primevue.min.css'
 import 'primeicons/primeicons.css'
@@ -33,7 +34,6 @@ import Rating from 'primevue/rating';
 import Menu from 'primevue/menu';
 import Divider from 'primevue/divider';
 
-
 const pinia = createPinia()
 const app = createApp(App);
 
@@ -48,7 +48,7 @@ app.component('Button', Button)
 app.component('Dialog', Dialog)
 app.component('InputMask', InputMask)
 app.component('InputText', InputText)
-app.component('toast', Toast)
+app.component('Toast', Toast)
 app.component('Card', Card)
 app.component('Calendar', Calendar)
 app.component('Password', Password)

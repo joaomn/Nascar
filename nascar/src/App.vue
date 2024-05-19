@@ -25,6 +25,15 @@ const authStore = useAuthStore();
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Titan+One&family=Ubuntu&display=swap');
+*{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 0;
+  
+}
 .app {
   display: flex;
   flex-direction: column;

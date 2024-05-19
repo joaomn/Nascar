@@ -59,9 +59,13 @@
       </div>
     </div>
   </div>
+  <div>
+    <button @click="teste">teste</button>
+  </div>
 </template>
 
 <script>
+import axios from '../request/requests';
 export default {
   name: "Perfil",
   data() {
@@ -116,7 +120,17 @@ export default {
       // Lógica para adicionar um novo display
       console.log("Adicionar novo display");
     },
-  },
+    async teste(){
+     const algo =  axios.post("http://localhost:8080/api/user")
+     .then(ee=>{
+      console.log("foi")
+     })
+     .catch(err=>{
+      console.log("deue rro")
+     })
+      }
+    }
+  
 };
 </script>
 
