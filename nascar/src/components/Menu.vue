@@ -3,7 +3,7 @@
     <nav>
       <ul class="menu">
         <li class="menu-item">
-          <RouterLink to="/home" class="menu-link">
+          <RouterLink to="/" class="menu-link">
             <i class="fas fa-home"></i>
             <span class="menu-text">Home</span>
           </RouterLink>
@@ -15,13 +15,13 @@
           </RouterLink>
         </li>
         <li class="menu-item">
-          <RouterLink to="/messages" class="menu-link">
+          <RouterLink to="/" class="menu-link">
             <i class="fas fa-envelope"></i>
             <span class="menu-text">Messages</span>
           </RouterLink>
         </li>
         <li class="menu-item">
-          <RouterLink to="/notifications" class="menu-link">
+          <RouterLink to="/" class="menu-link">
             <i class="fas fa-bell"></i>
             <span class="menu-text">Notifications</span>
           </RouterLink>

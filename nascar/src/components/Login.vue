@@ -9,7 +9,7 @@
 
         <label>
           <span>Seu email</span>
-          <InputText id="username" v-model="email" aria-describedby="username-help" />
+          <input id="username" v-model="email" aria-describedby="username-help" />
         </label>
 
         <label>
@@ -95,6 +95,7 @@ export default {
         const response = await axios.post("/api/user/login", { email: email.value, password: password.value });
         authStore.setToken(response.data.token);
         authStore.setIsLoggedIn(true);
+        localStorage.setItem('email', email.value);
         router.push('/perfil'); 
         toast.add({ severity: 'success', summary: 'Success Message', detail: 'Login bem-sucedido', life: 3000 });
       } catch (error) {

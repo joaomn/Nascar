@@ -9,11 +9,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token'); // ou qualquer outro método para obter o token
-    console.log('Obtendo token:', token);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('Token adicionado ao header:', config.headers.Authorization);
     } else {
       console.log('Token não encontrado');
     }

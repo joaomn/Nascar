@@ -6,7 +6,7 @@ import { createPinia} from 'pinia'
 
 
 
-import "primevue/resources/themes/lara-light-indigo/theme.css";
+import 'primevue/resources/themes/aura-light-lime/theme.css';
 import 'primevue/resources/primevue.min.css'
 import 'primeicons/primeicons.css'
 import '/node_modules/primeflex/primeflex.css'
