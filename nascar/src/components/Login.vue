@@ -1,32 +1,70 @@
 <template>
   <div class="container">
-    <div class="wrapper">
-      <div class="card-switch">
-        <label class="switch">
-          <input class="toggle" type="checkbox">
-          <span class="slider"></span>
-          <span class="card-side"></span>
-          <div class="flip-card__inner">
-            <div class="flip-card__front">
-              <div class="title">Acesse o Portal</div>
-              <form action="" class="flip-card__form">
-                <input type="email" v-model="login.email" placeholder="Email" class="flip-card__input">
-                <input type="password" v-model="login.password" placeholder="Password" class="flip-card__input">
-                <button class="flip-card__btn">Acessar!</button>
-              </form>
-            </div>
-            <div class="flip-card__back">
-              <div class="title">Cadastro</div>
-              <form @submit.prevent="addUser" class="flip-card__form">
-                <input type="text" v-model="SingUp.name" placeholder="Name" class="flip-card__input">
-                <input type="email" v-model="SingUp.email" placeholder="Email" class="flip-card__input">
-                <input type="password" v-model="SingUp.password" placeholder="Password" class="flip-card__input">
-                <button type="submit" class="flip-card__btn">Cadastrar!</button>
-              </form>
-            </div>
-          </div>
+    <div v-if="showLogin" class="form-container">
+      <form class="form" @submit.prevent="handleLogin">
+        <div class="header">
+          <img src="../assets/fundobrancologo.jpg" alt="" class="logo" />
+          <h3>Acesse o portal: </h3>
+        </div>
+
+        <label>
+          <span>Seu email</span>
+          <InputText id="username" v-model="email" aria-describedby="username-help" />
         </label>
-      </div>
+
+        <label>
+          <span>Senha</span>
+          <input type="password" name="password" v-model="password" />
+        </label>
+
+        <button class="submit">Login</button>
+        
+        <p>
+          Não tem uma conta? <a href="#" @click.prevent="toggleForm('signup')">Cadastre-se</a>
+        </p>
+        <p>
+          Esqueceu sua senha?
+          <a href="#" @click.prevent="toggleForm('recover')">Recuperar senha</a>
+        </p>
+      </form>
+    </div>
+
+    <div v-else-if="showRecoverForm" class="form-container">
+      <form class="form" @submit.prevent="handleRecoverPassword">
+        <h1>Recuperar Senha</h1>
+        <label>
+          <span>Seu email</span>
+          <input type="email" name="email" v-model="emailRecover" />
+        </label>
+
+        <button class="submit">Enviar</button>
+        <p>
+          Voltar para <a href="#" @click.prevent="toggleForm('login')">login</a>
+        </p>
+      </form>
+    </div>
+
+    <div v-else class="form-container">
+      <form class="form" @submit.prevent="handleSignup">
+        <h1>Cadastrar</h1>
+
+        <label>
+          <span>Nome: </span>
+          <input type="text" v-model="name" />
+        </label>
+        <label>
+          <span>Email: </span>
+          <input type="email" name="email" v-model="email" />
+        </label>
+
+        <label>
+          <span>Senha :</span>
+          <input type="password" name="password" v-model="password" />
+        </label>
+
+        <button class="submit">Cadastrar</button>
+        <p>Já tem uma conta? <a href="#" @click.prevent="toggleForm('login')">Faça login</a></p>
+      </form>
     </div>
   </div>
 </template>
@@ -36,42 +74,77 @@ import { ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import axios from '../request/requests';
 import { useToast } from 'primevue/usetoast';
+import { useRouter } from 'vue-router';
+
 
 export default {
   setup() {
+    const showLogin = ref(true);
+    const showRecoverForm = ref(false);
+    const showSignUp = ref(false);
+    const name = ref("");
+    const email = ref("");
+    const emailRecover = ref("");
+    const password = ref("");
     const toast = useToast();
     const authStore = useAuthStore();
+    const router = useRouter();
 
-    const login = ref({
-      email: '',
-      password: ''
-    });
-
-    const SingUp = ref({
-      name: '',
-      email: '',
-      password: ''
-    });
-
-    const addUser = async () => {
+    const handleLogin = async () => {
       try {
-        const response = await axios.post("/api/user", SingUp.value);
-        authStore.setIsLoggedIn(false);
+        const response = await axios.post("/api/user/login", { email: email.value, password: password.value });
         authStore.setToken(response.data.token);
-        toast.add({ severity: 'success', summary: 'Success Message', detail: 'Cadastrado com sucesso', life: 3000 });
+        authStore.setIsLoggedIn(true);
+        router.push('/perfil'); 
+        toast.add({ severity: 'success', summary: 'Success Message', detail: 'Login bem-sucedido', life: 3000 });
       } catch (error) {
-        toast.add({ severity: 'error', summary: 'Error Message', detail: 'deu erro', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Error Message', detail: 'Erro no login', life: 3000 });
+      }
+    };
+
+    const handleSignup = async () => {
+      try {
+        const response = await axios.post("/api/user", { name: name.value, email: email.value, password: password.value });
+        toast.add({ severity: 'success', summary: 'Success Message', detail: 'Cadastrado com sucesso', life: 3000 });
+        toggleForm('login');
+      } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error Message', detail: 'Erro no cadastro', life: 3000 });
+      }
+    };
+
+    const toggleForm = (form) => {
+      showLogin.value = form === 'login';
+      showRecoverForm.value = form === 'recover';
+      showSignUp.value = form === 'signup';
+    };
+
+    const handleRecoverPassword = async () => {
+      try {
+        await axios.post(`/api/user/${emailRecover.value}/password`);
+        toast.add({ severity: 'success', summary: 'Success Message', detail: 'Email de recuperação enviado', life: 3000 });
+        toggleForm('login');
+      } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error Message', detail: 'Erro ao enviar email de recuperação', life: 3000 });
       }
     };
 
     return {
-      login,
-      SingUp,
-      addUser
+      showLogin,
+      showRecoverForm,
+      showSignUp,
+      name,
+      email,
+      emailRecover,
+      password,
+      handleLogin,
+      handleSignup,
+      toggleForm,
+      handleRecoverPassword,
     };
-  }
+  },
 };
 </script>
+
 
 <style scoped>
 .container {
@@ -82,200 +155,86 @@ export default {
   background: #d6e0f09a;
 }
 
-
-
-.wrapper {
-  --input-focus: #2d8cf0;
-  --font-color: #323232;
-  --font-color-sub: #c7bdbd;
-  --bg-color: #fff;
-  --bg-color-alt: #666;
-  --main-color: #6d8fa3;
-}
-/* switch card */
-.switch {
-  transform: translateY(-200px);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 30px;
-  width: 50px;
-  height: 20px;
+.form-container {
+  background: #e6f4f55b;
+  box-shadow: 0 19px 38px black, 0 15px 12px rgba(0, 0, 0, 0.22);
+  border-radius: 25px;
+  width: 80%;
+  margin: 0 10px;
+  padding: 30px; 
 }
 
-.card-side::before {
-  position: absolute;
-  content: 'Acesar';
-  left: -70px;
-  top: 0;
-  width: 100px;
-  text-decoration: underline;
-  color: var(--font-color);
-  font-weight: 600;
+form {
+  padding: 0 20px; 
 }
 
-.card-side::after {
-  position: absolute;
-  content: 'Cadastro';
-  left: 70px;
-  top: 0;
-  width: 100px;
-  text-decoration: none;
-  color: var(--font-color);
-  font-weight: 600;
-}
-
-.toggle {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  box-sizing: border-box;
-  border-radius: 5px;
-  border: 2px solid var(--main-color);
-  box-shadow: 4px 4px var(--main-color);
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--bg-colorcolor);
-  transition: 0.3s;
-}
-
-.slider:before {
-  box-sizing: border-box;
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  border: 2px solid var(--main-color);
-  border-radius: 5px;
-  left: -2px;
-  bottom: 2px;
-  background-color: var(--bg-color);
-  box-shadow: 0 3px 0 var(--main-color);
-  transition: 0.3s;
-}
-
-.toggle:checked + .slider {
-  background-color: var(--input-focus);
-}
-
-.toggle:checked + .slider:before {
-  transform: translateX(30px);
-}
-
-.toggle:checked ~ .card-side:before {
-  text-decoration: none;
-}
-
-.toggle:checked ~ .card-side:after {
-  text-decoration: underline;
-}
-
-/* card */ 
-
-.flip-card__inner {
-  width: 300px;
-  height: 350px;
-  position: relative;
-  background-color: transparent;
-  perspective: 1000px;
-    /* width: 100%;
-    height: 100%; */
+h1 {
+  color: black;
   text-align: center;
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
+  font-size: 30px;
+  
 }
 
-.toggle:checked ~ .flip-card__inner {
-  transform: rotateY(180deg);
-}
-
-.toggle:checked ~ .flip-card__front {
-  box-shadow: none;
-}
-
-.flip-card__front, .flip-card__back {
-  padding: 20px;
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  background: lightgrey;
-  gap: 20px;
-  border-radius: 5px;
-  border: 2px solid var(--main-color);
-  box-shadow: 4px 4px var(--main-color);
-}
-
-.flip-card__back {
+label {
+  display: block;
+  margin: 25px auto 0; 
   width: 100%;
-  transform: rotateY(180deg);
+  text-align: center; 
 }
 
-.flip-card__form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+label span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #505f75;
+  text-transform: uppercase;
 }
 
-.title {
-  margin: 20px 0 20px 0;
-  font-size: 25px;
-  font-weight: 900;
+input {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  font-size: 16px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.4);
   text-align: center;
-  color: var(--main-color);
-}
-
-.flip-card__input {
-  width: 250px;
   height: 40px;
-  border-radius: 5px;
-  border: 2px solid var(--main-color);
-  background-color: var(--bg-color);
-  box-shadow: 4px 4px var(--main-color);
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--font-color);
-  padding: 5px 10px;
-  outline: none;
+  
 }
 
-.flip-card__input::placeholder {
-  color: var(--font-color-sub);
-  opacity: 0.8;
+button {
+  display: block;
+  margin: 20px auto ;
+  width: 100%;
+  height: 36px;
+  background-color: rgb(16, 97, 56);
+  font-size: 20px;
+  
 }
 
-.flip-card__input:focus {
-  border: 2px solid var(--input-focus);
+button:hover {
+  background-color: rgba(16, 97, 56, 0.699);
+  font-size: 22px;
 }
 
-.flip-card__btn:active, .button-confirm:active {
-  box-shadow: 0px 0px var(--main-color);
-  transform: translate(3px, 3px);
+@media (min-width: 768px) {
+  .form-container {
+    width: 40%; /* Restaurado para 40% em telas maiores */
+  }
 }
 
-.flip-card__btn {
-  margin: 20px 0 20px 0;
-  width: 120px;
-  height: 40px;
-  border-radius: 5px;
-  border: 2px solid var(--main-color);
-  background-color: var(--bg-color);
-  box-shadow: 4px 4px var(--main-color);
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--font-color);
-  cursor: pointer;
-} 
+.logo{
+  width: 150px;
+  height: 150px;
+  min-width: auto;
+  min-height: auto;
+  position: inherit;
+  bottom: 40px;
+}
+
+.header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 </style>

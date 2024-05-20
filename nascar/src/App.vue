@@ -15,6 +15,7 @@ const authStore = useAuthStore();
       <Menu  v-if="authStore.isLoggedIn"></Menu>
       <Divider layout="vertical" />
       <div class="content">
+        <Toast />
        <RouterView />
       </div>
     </div>

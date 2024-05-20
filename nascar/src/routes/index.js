@@ -23,7 +23,7 @@ const routes = [
   },
   {
     name: "Perfil",
-    path: "/Perfil",
+    path: "/perfil",
     component: Perfil,
     meta: {
       requiresAuth: false,
