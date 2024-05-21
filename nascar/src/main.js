@@ -6,10 +6,10 @@ import { createPinia} from 'pinia'
 
 
 
-import 'primevue/resources/themes/aura-light-lime/theme.css';
-import 'primevue/resources/primevue.min.css'
-import 'primeicons/primeicons.css'
-import '/node_modules/primeflex/primeflex.css'
+import 'primevue/resources/themes/aura-light-blue/theme.css';
+import 'primevue/resources/primevue.min.css';
+import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';
 
 
 
@@ -58,10 +58,10 @@ app.component('RadioButton', RadioButton)
 app.component('Sidebar', Sidebar)
 app.component('Menu', Menu)
 
+app.use(PrimeVue);
 app.use(pinia);
 app.use(router);
 app.use(ToastService);
-app.use(PrimeVue);
 
 
 app.mount('#app');
