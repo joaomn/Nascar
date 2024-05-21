@@ -4,32 +4,20 @@
       <ul class="menu">
         <li class="menu-item">
           <RouterLink to="/" class="menu-link">
-            <i class="fas fa-home"></i>
+            <i class="pi pi-home" style="margin-right: 5px;"></i>
             <span class="menu-text">Home</span>
           </RouterLink>
         </li>
         <li class="menu-item">
           <RouterLink to="/dashboard" class="menu-link">
-            <i class="fas fa-search"></i>
-            <span class="menu-text">Search</span>
+            <i class="pi pi-chart-line" style="margin-right: 5px;"></i>
+            <span class="menu-text">Dashboard</span>
           </RouterLink>
         </li>
         <li class="menu-item">
           <RouterLink to="/" class="menu-link">
-            <i class="fas fa-envelope"></i>
-            <span class="menu-text">Messages</span>
-          </RouterLink>
-        </li>
-        <li class="menu-item">
-          <RouterLink to="/" class="menu-link">
-            <i class="fas fa-bell"></i>
-            <span class="menu-text">Notifications</span>
-          </RouterLink>
-        </li>
-        <li class="menu-item">
-          <RouterLink to="/perfil" class="menu-link">
-            <i class="fas fa-user"></i>
-            <span class="menu-text">Perfil</span>
+            <i class="pi pi-sign-out" style="margin-right: 5px;"></i>
+            <span class="menu-text">Log out</span>
           </RouterLink>
         </li>
       </ul>
@@ -42,7 +30,7 @@
   background: #b8c7cc;
   display: flex;
   flex-direction: column; /* Alterado para coluna em telas menores */
-  padding-top: 90px; /* Adaptação do padding para diferentes tamanhos de tela */
+  padding-top: 150px; /* Adaptação do padding para diferentes tamanhos de tela */
   
 }
 

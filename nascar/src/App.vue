@@ -9,7 +9,7 @@ const authStore = useAuthStore();
 
 <template>
  
-  <div class="app" >
+  <div class="appy" >
     <BarraSuperior />
     <div class="menu-container">
       <Menu  v-if="authStore.isLoggedIn"></Menu>
@@ -25,7 +25,7 @@ const authStore = useAuthStore();
  
 </template>
 
-<style scoped>
+<style >
 @import url('https://fonts.googleapis.com/css2?family=Titan+One&family=Ubuntu&display=swap');
 *{
   margin: 0;
