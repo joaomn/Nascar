@@ -6,7 +6,7 @@ import { createPinia} from 'pinia'
 
 
 
-import 'primevue/resources/themes/lara-light-blue/theme.css';
+import 'primevue/resources/themes/aura-light-green/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 import '/node_modules/primeflex/primeflex.css';
@@ -33,11 +33,15 @@ import Sidebar from 'primevue/sidebar';
 import Rating from 'primevue/rating';
 import Menu from 'primevue/menu';
 import Divider from 'primevue/divider';
+import Avatar from 'primevue/avatar';
+import ToggleButton from 'primevue/togglebutton';
 
 const pinia = createPinia()
 const app = createApp(App);
 
 
+app.component('Avatar', Avatar)
+app.component('ToggleButton', ToggleButton)
 app.component('Divider', Divider)
 app.component('Rating', Rating)
 app.component('DataTable', DataTable)

@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 // Adicionando o interceptor para injetar o token no header
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); // ou qualquer outro método para obter o token
+    const token = sessionStorage.getItem('token'); // ou qualquer outro método para obter o token
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

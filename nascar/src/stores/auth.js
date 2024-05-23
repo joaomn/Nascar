@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    isLoggedIn: localStorage.getItem('isLoggedIn') === 'true', // Verifica se o usuário estava logado antes
-    token: localStorage.getItem('token') || null,
+    isLoggedIn: sessionStorage.getItem('isLoggedIn') === 'true', // Verifica se o usuário estava logado antes
+    token: sessionStorage.getItem('token') || null,
   }),
   getters: {
     getToken() {
@@ -15,11 +15,11 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     setToken(token) {
       this.token = token;
-      localStorage.setItem('token', token); // Armazena o token no localStorage
+      sessionStorage.setItem('token', token); // Armazena o token no localStorage
     },
     setIsLoggedIn(value) {
       this.isLoggedIn = value;
-      localStorage.setItem('isLoggedIn', value); // Armazena o estado de login no localStorage
+      sessionStorage.setItem('isLoggedIn', value); // Armazena o estado de login no localStorage
     },
   },
 });
