@@ -64,7 +64,18 @@
       ></Column>
       <Column field="description" id="coluna" header="Descrição"></Column>
       <Column field="token" id="coluna" header="Token"></Column>
-      <Column field="active" id="coluna" header="Status" sortable></Column>
+      <Column  id="coluna" header="Status" sortable>
+        <template #body="slotProps">
+          <span v-if="slotProps.data.active">
+            <i class="pi pi-check" style="color: green;"></i>
+            Ativo
+          </span>
+          <span v-else>
+            <i class="pi pi-times" style="color: red;"></i>
+            Inativo
+          </span>
+        </template>
+      </Column>
       <Column id="colunabotao" header=" Açoes" style="padding: 20px">
         <template #body="slotProps">
           <Button
@@ -84,12 +95,13 @@
             label="Deletar"
             id="botoes"
             icon="pi pi-trash"
-            class="p-button-rounded p-button-danger"
+            class="p-button-rounded p-button-danger g-2"
             style="
               border-radius: 10px;
               margin: 5 auto;
               max-width: 200px;
               padding: 8px;
+              
             "
             @click="($event) => deleteDialogbox(slotProps.data)"
           />
@@ -104,7 +116,7 @@
               padding: 3px;
               max-height: 38px;
             "
-            @click="($event) => deleteDialogbox(slotProps.data)"
+            @click="($event) => goToDashboard(slotProps.data)"
           />
         </template>
       </Column>
@@ -130,7 +142,7 @@
     <template #header>
       <div class="inline-flex align-items-center justify-content-center gap-2">
         <span class="font-bold white-space-nowrap titulo-modal"
-          >Amy Elsner</span
+          >Adicionar Display</span
         >
       </div>
     </template>
@@ -256,7 +268,7 @@
     <template #header>
       <div class="inline-flex align-items-center justify-content-center gap-2">
         <span class="font-bold white-space-nowrap titulo-modal"
-          >Amy Elsner</span
+          >Editar Display</span
         >
       </div>
     </template>
@@ -316,6 +328,7 @@
 <script>
 import axios from "../request/requests";
 import { useToast } from "primevue/usetoast";
+import { useRouter } from 'vue-router';
 export default {
   name: "Perfil",
   data() {
@@ -348,10 +361,12 @@ export default {
     };
   },
   async mounted() {
-    await this.getUser(), this.getDisplays();
+    await this.getUser(),
+     this.getDisplays();
   },
   setup() {
     const toast = useToast();
+    const router = useRouter();
   },
   methods: {
     async getUser() {
@@ -483,6 +498,11 @@ export default {
           });
         });
     },
+    goToDashboard(data){
+      console.log(data.id);
+      this.$router.push({ name: 'dashboard', params: {display: data.id } })
+    },
+    
   },
 };
 </script>

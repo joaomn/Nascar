@@ -19,11 +19,12 @@ const routes = [
   
   {
     name: "dashboard",
-    path: "/dashboard",
+    path: "/dashboard/:display",
     component: Dashboard,
     meta: {
       requiresAuth: true,
     },
+    props: true
   },
   {
     name: "Perfil",
