@@ -36,6 +36,7 @@ import Divider from 'primevue/divider';
 import Avatar from 'primevue/avatar';
 import ToggleButton from 'primevue/togglebutton';
 import Chart from 'primevue/chart';
+import ProgressSpinner from 'primevue/progressspinner';
 
 const pinia = createPinia()
 const app = createApp(App);
@@ -43,6 +44,7 @@ const app = createApp(App);
 
 app.component('Chart', Chart)
 app.component('Avatar', Avatar)
+app.component('ProgressSpinner', ProgressSpinner)
 app.component('ToggleButton', ToggleButton)
 app.component('Divider', Divider)
 app.component('Rating', Rating)
