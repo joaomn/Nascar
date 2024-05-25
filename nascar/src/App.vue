@@ -28,7 +28,7 @@ const authStore = useAuthStore();
   margin: 0;
   border: 0;
   font-family: "Ubuntu", sans-serif;
-  font-weight: 0;
+  font-weight: 600;
 }
 .app {
   display: flex;

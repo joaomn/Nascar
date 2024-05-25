@@ -13,7 +13,7 @@
           <span class="menu-text">Dashboard</span>
         </li>
         <li class="menu-item">
-          <RouterLink to="/" class="menu-link">
+          <RouterLink to="/" class="menu-link b">
             <i class="pi pi-sign-out" style="margin-right: 5px;"></i>
             <span class="menu-text">Log out</span>
           </RouterLink>
@@ -24,8 +24,8 @@
   <Dialog v-model:visible="displaySelect" :style="{ width: '850px' }" header="Adicionar Display" :modal="true"
     class="p-fluid">
     <template #header>
-      <div class="inline-flex align-items-center justify-content-center gap-2">
-        <span class="font-bold white-space-nowrap titulo-modal">Escolha um Display</span>
+      <div class="inline-flex align-items-center justify-content-center ">
+        <span class="font-bold white-space-nowrap titulo-modal"> Escolha um Display</span>
       </div>
     </template>
     <DataTable :value="displays" id="tabela" paginator showGridlines :rows="5" tableStyle="min-width: 50rem;">
@@ -99,14 +99,12 @@ export default {
         .get(`/api/display/user/${userDisplayID}`)
         .then((resp) => {
           this.displays = resp.data;
-          console.log(resp.data);
         })
         .catch((er) => {
           console.log("errro");
         });
     },
     goToDashboard(data){
-      console.log(data.id);
       this.displaySelect = false;
       this.$router.push({ name: 'dashboard', params: {display: data.id } })
     }
@@ -130,7 +128,9 @@ export default {
   padding: 0;
 }
 
-
+.titulo-modal {
+  padding-left: 10px;
+}
 
 .menu-item {
   background: #f0efee;
@@ -149,10 +149,7 @@ export default {
 
 }
 
-span {
-  display: inline-block;
-  transform: skew(21deg);
-}
+
 
 .menu-item::before {
   content: '';
@@ -168,7 +165,7 @@ span {
 }
 
 .menu-item:hover {
-  color: #fff;
+  color: #251870;
 }
 
 .menu-item:hover::before {
@@ -191,6 +188,13 @@ span {
   margin-right: 1px;
 }
 
+.menu-link:hover{
+  color: #251870;
+}
+
+.menu-link .b:hover{
+  color:#851717
+}
 .menu-text {
   white-space: nowrap;
   overflow: hidden;

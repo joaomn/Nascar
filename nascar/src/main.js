@@ -35,11 +35,13 @@ import Menu from 'primevue/menu';
 import Divider from 'primevue/divider';
 import Avatar from 'primevue/avatar';
 import ToggleButton from 'primevue/togglebutton';
+import Chart from 'primevue/chart';
 
 const pinia = createPinia()
 const app = createApp(App);
 
 
+app.component('Chart', Chart)
 app.component('Avatar', Avatar)
 app.component('ToggleButton', ToggleButton)
 app.component('Divider', Divider)
