@@ -2,9 +2,9 @@
   <div class="header flex justify-content-between m-5">
     <h1>Dashboard de: {{displayy.name}}</h1>
     <div class="flex  gap-2">
-      <Button label="Exportar" severity="help"  raised @click="exportModal = true" />
-      <Button label="Atualizar" severity="warning"  raised @click="reloadCharts" />
-      <Button label="Atualizar" severity="warning" raised @click="reloadCharts" />
+      <Button label="Exportar" severity="help" icon="pi pi-file-export" raised @click="exportModal = true" />
+      <Button label="Filtrar Data" severity="secondary" icon="pi pi-filter" raised @click="filtertModal = true" />
+      <Button label="Atualizar" severity="warning" icon="pi pi-refresh" raised @click="reloadCharts" />
   
     </div>
    
@@ -20,17 +20,17 @@
       <Chart type="line" :data="data" :options="options" class="h-30rem flex justify-content-center" />
     </div>
   </div>
-  <div class="grid m-3 justify-content-center" v-if="!dataLoading">
+  <div class="grid gap-8 justify-content-center" v-if="!dataLoading">
     
-      <div class="col-12 md:col-4 lg:col-4">
+      <div class="col-12 md:col-8 lg:col-4">
         <span>Contagem de Status do tipo "Bom"</span>
         <Chart type="pie" :data="goodStatusData" :options="barOptions" class="w-full md:w-30rem" />
       </div>
-      <div class="col-12 md:col-4 lg:col-4">
+      <div class="col-12 md:col-8 lg:col-6">
         <span>Contagem de Status do tipo "Satisfatório"</span>
         <Chart type="pie" :data="satisfactoryStatusData" :options="barOptions" class="w-full md:w-30rem" />
       </div>
-      <div class="col-12 md:col-4 lg:col-4">
+      <div class="col-12 md:col-8 lg:col-8">
         <span>Contagem de Status do tipo "Ruim"</span>
         <Chart type="pie" :data="badStatusData" :options="barOptions" class="w-full md:w-30rem" />
       </div>
@@ -71,27 +71,27 @@
     class="p-fluid">
     <template #header>
       <div class="inline-flex align-items-center justify-content-center gap-2">
-        <span class="font-bold white-space-nowrap titulo-modal">Modal de Export CSV</span>
+        <span class="font-bold white-space-nowrap titulo-modal">Filtrar Datas do Grafico</span>
       </div>
     </template>
     
     <div class="field">
       <div class="p-inputgroup">
         
-        <Calendar v-model="exportStartDate" placeholder="Data Inicial" class="p-inputgroup-addon" required showIcon showButtonBar />
+        <Calendar v-model="filterStartDate" placeholder="Data Inicial" class="p-inputgroup-addon"  required showIcon showButtonBar />
       </div>
     </div>
     <div class="field">
       <div class="p-inputgroup">
         
-        <Calendar id="calendar" v-model="exportEndDate" placeholder="Data Final" required showIcon class="p-inputgroup-addon" showButtonBar/>
+        <Calendar id="calendar" v-model="filterendDate" placeholder="Data Final" required showIcon class="p-inputgroup-addon"  showButtonBar/>
       </div>
     </div>
     
     <template #footer>
-      <Button label="Sair" severity="danger" icon="pi pi-times" @click="exportModal = false" 
+      <Button label="Sair" severity="danger" icon="pi pi-times" @click="filtertModal = false" 
         class="p-button-text" />
-      <Button label="Enviar" icon="pi pi-check" severity="success" @click="sendExport(), (exportModal = false)
+      <Button label="Enviar" icon="pi pi-check" severity="success" @click="getchartByFilterData(filterStartDate,filterendDate), (filtertModal = false)
     " class="p-button-text" />
     </template>
   </Dialog>
@@ -132,6 +132,9 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
         filterendDate: null,
         dateFormat: 'yy-mm-dd',
         data: {},
+        displayID: '',
+        startDate: null,
+        endDate: null,
       statusData: {},
       goodStatusData: {},
       satisfactoryStatusData: {},
@@ -197,16 +200,20 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
     methods: {
       async fetchDisplay() {
         try {
-          const response = await axios.get(`/api/display/${this.display}`);
-          this.displayy = response.data;
+          const response = await axios.get(`/api/display/get-by-token/${this.display}`);
+          this.displayID = response.data.id;
+          this.displayy = response.data
         } catch (error) {
           console.error('Erro ao buscar os detalhes do display:', error);
         }
       },
       async getchartData(){
-        const currentDate = new Date();
-        const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        
+          
+          const currentDate = new Date();
+          const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+          const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        
 
         const formatDate = (date) => {
           const year = date.getFullYear();
@@ -218,7 +225,7 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
         const formattedStartDate = formatDate(startDate);
         const formattedEndDate = formatDate(endDate);
 
-        await axios.get(`/api/event/events?startDate=${formattedStartDate}&endDate=${formattedEndDate}&displayId=${this.display}`)
+        await axios.get(`/api/event/events?startDate=${formattedStartDate}&endDate=${formattedEndDate}&displayId=${this.displayID}`)
           .then(resp => {
             const labels = resp.data.map(item => item.date);
         const luminosity = resp.data.map(item => item.luminosity);
@@ -339,7 +346,7 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
             detail: "Sua Solicitação será processada e em instantes respondida no seu email",
             life: 80000,
           });
-        await axios.get(`/api/event/events/csv-generate?startDate=${formattedExportStartDate}&endDate=${formattedExportendDate}&displayId=${this.display}`)
+        await axios.get(`/api/event/events/csv-generate?startDate=${formattedExportStartDate}&endDate=${formattedExportendDate}&displayId=${this.displayID}`)
         .then(() =>{
           this.$toast.add({
             severity: "success",
@@ -347,6 +354,7 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
             detail: "Confira sua caixa de email, seu CSV foi enviado",
             life: 10000,
           });
+          this.restoreDatas();
         })
         .catch(()=>{
           this.$toast.add({
@@ -365,7 +373,137 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
     },
     reloadCharts(){
       this.getchartData();
-    }
+    },
+    restoreDatas(){
+      this.exportStartDate = null
+       this.exportEndDate = null
+       this.filterStartDate= null
+        this.filterendDate = null
+    },
+    async getchartByFilterData(start, end){
+   
+
+        const formatDate = (date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0'); // getMonth() retorna o mês de 0 a 11
+          const day = String(date.getDate()).padStart(2, '0');
+          return `${year}-${month}-${day}`;
+        };
+
+        const formattedStartDate = formatDate(start);
+        const formattedEndDate = formatDate(end);
+
+        await axios.get(`/api/event/events?startDate=${formattedStartDate}&endDate=${formattedEndDate}&displayId=${this.displayID}`)
+          .then(resp => {
+            const labels = resp.data.map(item => item.date);
+        const luminosity = resp.data.map(item => item.luminosity);
+        const sound = resp.data.map(item => item.sound);
+        const temperature = resp.data.map(item => item.temperature);
+        
+        
+
+        const statusCounts = {
+          luminosity: { good: 0, satisfactory: 0, bad: 0 },
+          sound: { good: 0, satisfactory: 0, bad: 0 },
+          temperature: { good: 0, satisfactory: 0, bad: 0 }
+        };
+
+        resp.data.forEach(item => {
+          if (item.luminosityStatus === 'Bom') statusCounts.luminosity.good++;
+          if (item.luminosityStatus === 'Satisfatorio') statusCounts.luminosity.satisfactory++;
+          if (item.luminosityStatus === 'Ruim') statusCounts.luminosity.bad++;
+
+          if (item.soundStatus === 'Bom') statusCounts.sound.good++;
+          if (item.soundStatus === 'Satisfatorio') statusCounts.sound.satisfactory++;
+          if (item.soundStatus === 'Ruim') statusCounts.sound.bad++;
+
+          if (item.temperatureStatus === 'Bom') statusCounts.temperature.good++;
+          if (item.temperatureStatus === 'Satisfatorio') statusCounts.temperature.satisfactory++;
+          if (item.temperatureStatus === 'Ruim') statusCounts.temperature.bad++;
+        });
+
+        this.data = {
+          labels,
+          datasets: [
+            {
+              label: 'Luminosidade',
+              borderColor: 'rgba(255, 99, 132, 1)',
+              backgroundColor: 'rgba(255, 99, 132, 0.2)',
+              data: luminosity,
+              fill: true
+            },
+            {
+              label: 'Som',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              data: sound,
+              fill: true
+            },
+            {
+              label: 'Temperatura',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              fill: true,
+              data: temperature,
+            },
+          ],
+        };
+
+        
+
+        this.goodStatusData = {
+          labels: ['Luminosidade', 'Som', 'Temperatura'],
+          datasets: [
+            {
+              label: 'Bom',
+              
+              borderWidth: 1,
+              data: [
+                statusCounts.luminosity.good,
+                statusCounts.sound.good,
+                statusCounts.temperature.good
+              ]
+            }
+          ]
+        };
+
+        this.satisfactoryStatusData = {
+          labels: ['Luminosidade', 'Som', 'Temperatura'],
+          datasets: [
+            {
+              label: 'Satisfatório',
+             
+              borderWidth: 1,
+              data: [
+                statusCounts.luminosity.satisfactory,
+                statusCounts.sound.satisfactory,
+                statusCounts.temperature.satisfactory
+              ]
+            }
+          ]
+        };
+
+        this.badStatusData = {
+          labels: ['Luminosidade', 'Som', 'Temperatura'],
+          datasets: [
+            {
+              label: 'Ruim',
+             
+              borderWidth: 1,
+              data: [
+                statusCounts.luminosity.bad,
+                statusCounts.sound.bad,
+                statusCounts.temperature.bad
+              ]
+            }
+          ]
+        };
+        this.dataLoading = false;
+          })
+          .catch(error => {
+            console.error('Erro ao obter os dados:', error);
+          });
+      },
     }
   };
   </script>
@@ -420,7 +558,9 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
   --gradient: linear-gradient(to bottom, #053352, #3d83ff, #7e61ff);
   --color: #32a6ff;
 }
-
+Button{
+  gap: 5px;
+}
 .notification:before {
   position: absolute;
   content: "";

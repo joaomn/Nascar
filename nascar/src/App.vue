@@ -26,7 +26,6 @@ const authStore = useAuthStore();
 @import url("https://fonts.googleapis.com/css2?family=Titan+One&family=Ubuntu&display=swap");
 * {
   margin: 0;
-  border: 0;
   font-family: "Ubuntu", sans-serif;
   font-weight: 600;
 }

@@ -12,11 +12,9 @@
           <i class="pi pi-chart-line" style="margin-right: 5px;"></i>
           <span class="menu-text">Dashboard</span>
         </li>
-        <li class="menu-item">
-          <RouterLink to="/" class="menu-link b">
+        <li class="menu-item" @click="logout">
             <i class="pi pi-sign-out" style="margin-right: 5px;"></i>
             <span class="menu-text">Log out</span>
-          </RouterLink>
         </li>
       </ul>
     </nav>
@@ -64,9 +62,11 @@
 <script>
 import axios from "../request/requests";
 import { useRouter } from 'vue-router';
+import { useAuthStore } from "../stores/auth";
 export default {
   setup(){
     const router = useRouter();
+    const auth = useAuthStore();
   },
   async mounted() {
     await this.getUser(),
@@ -77,6 +77,7 @@ export default {
       displaySelect: false,
       displays: [],
       sessionUser: [],
+      userId: ''
     }
   },
   methods:{
@@ -94,7 +95,7 @@ export default {
         });
     },
     async getDisplays() {
-      const userDisplayID = 1;
+      const userDisplayID = this.userId;
       const disp = await axios
         .get(`/api/display/user/${userDisplayID}`)
         .then((resp) => {
@@ -106,8 +107,14 @@ export default {
     },
     goToDashboard(data){
       this.displaySelect = false;
-      this.$router.push({ name: 'dashboard', params: {display: data.id } })
+      this.$router.push({ name: 'dashboard', params: {display: data.token } })
+    },
+    logout(){
+      sessionStorage.setItem('isLoggedIn', false);
+      sessionStorage.setItem('token', null);
+      location.reload();
     }
+
   }
 }
 </script>

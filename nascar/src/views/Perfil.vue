@@ -335,7 +335,7 @@ export default {
     return {
       displays: [],
       sessionUser: [],
-      userId: 1,
+      userId: '',
       addDisplayModal: false,
       newDisplay: {
         name: null,
@@ -382,7 +382,7 @@ export default {
         });
     },
     async getDisplays() {
-      const userDisplayID = 1;
+      const userDisplayID = this.userId;
       const disp = await axios
         .get(`/api/display/user/${userDisplayID}`)
         .then((resp) => {
@@ -394,7 +394,7 @@ export default {
         });
     },
     async addDisplay() {
-      this.newDisplay.user.id = 1;
+      this.newDisplay.user.id = this.userId;
       await axios
         .post("/api/display", this.newDisplay)
         .then((resp) => {
@@ -473,7 +473,7 @@ export default {
         });
     },
     async updateDisplay(id) {
-      this.updateDisplayModel.user.id = 1;
+      this.updateDisplayModel.user.id = this.userId;
       await axios
         .put("/api/display/" + id, {
           name: this.updateDisplayModel.name,
@@ -499,8 +499,7 @@ export default {
         });
     },
     goToDashboard(data){
-      console.log(data.id);
-      this.$router.push({ name: 'dashboard', params: {display: data.id } })
+      this.$router.push({ name: 'dashboard', params: {display: data.token } })
     },
     
   },

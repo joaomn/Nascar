@@ -36,6 +36,7 @@
           <span>Seu email</span>
           <input type="email" name="email" v-model="emailRecover" />
         </label>
+        
 
         <button class="submit">Enviar</button>
         <p>
@@ -89,6 +90,7 @@ export default {
     const toast = useToast();
     const authStore = useAuthStore();
     const router = useRouter();
+    const withingEmail = ref(false);
 
     const handleLogin = async () => {
       try {
@@ -120,10 +122,11 @@ export default {
     };
 
     const handleRecoverPassword = async () => {
+      toast.add({ severity: 'contrast', summary: '', detail: 'Sua Solicitação foi recebia e está sendo processada, aguarde', life: 10000 });
+      toggleForm('login');
       try {
         await axios.post(`/api/user/${emailRecover.value}/password`);
         toast.add({ severity: 'success', summary: 'Success Message', detail: 'Email de recuperação enviado', life: 3000 });
-        toggleForm('login');
       } catch (error) {
         toast.add({ severity: 'error', summary: 'Error Message', detail: 'Erro ao enviar email de recuperação', life: 3000 });
       }
