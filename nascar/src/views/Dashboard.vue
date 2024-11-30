@@ -11,31 +11,87 @@
   </div>
   <div class=" flex justify-content-center m-8" v-if="dataLoading">
     <div>
-
       <h1> Não há dados para este Display</h1>
     </div>
   </div>
-  <div class="principalChart" v-if="!dataLoading">
-    <div class="card ">
-      <Chart type="line" :data="data" :options="options" class="h-30rem flex justify-content-center" />
+  
+    <div class="principalChart" v-if="!dataLoading">
+      
+<TabView >
+  <TabPanel header="Luminosidade">
+    
+    <div class="grid gap-8 justify-content-center" v-if="!dataLoading">
+
+    <div class="col-6 md:col-6 lg:col-4 justify-content-center align-content-center">
+      <p class="mb-2">Status da Ultima Aferição</p>
+      <GaugeChart :maxValue="200" :currentValue="lastlum" class=" flex justify-content-center" />
+      <p class="mt-4">
+        A ultima Aferição foi de {{ lastlum }}
+      </p>
     </div>
-  </div>
-  <div class="grid gap-8 justify-content-center" v-if="!dataLoading">
-    
-      <div class="col-12 md:col-8 lg:col-4">
-        <span>Contagem de Status do tipo "Bom"</span>
-        <Chart type="pie" :data="goodStatusData" :options="barOptions" class="w-full md:w-30rem" />
-      </div>
-      <div class="col-12 md:col-8 lg:col-6">
-        <span>Contagem de Status do tipo "Satisfatório"</span>
-        <Chart type="pie" :data="satisfactoryStatusData" :options="barOptions" class="w-full md:w-30rem" />
-      </div>
-      <div class="col-12 md:col-8 lg:col-8">
-        <span>Contagem de Status do tipo "Ruim"</span>
-        <Chart type="pie" :data="badStatusData" :options="barOptions" class="w-full md:w-30rem" />
+      
+      <div class="col-6 md:col-6 lg:col-4">
+        <span>Contagem Por Status</span>
+        <Chart type="polarArea" :data="badStatusData" :options="barOptions" class="w-full md:w-30rem" />
       </div>
     
   </div>
+  </TabPanel>
+  <TabPanel header="Temperatura">
+    
+    <div class="grid gap-8 justify-content-center" v-if="!dataLoading">
+  
+      <div class="col-6 md:col-6 lg:col-4 justify-content-center align-content-center">
+        <p class="mb-2">Contagem de Status do tipo "Ruim"</p>
+        <GaugeChart :maxValue="200" :currentValue="lasttemp" class=" flex justify-content-center" />
+        <p class="mt-4">
+          A ultima Aferição foi de {{ lasttemp }}
+        </p>
+      </div>
+        
+        <div class="col-6 md:col-6 lg:col-4">
+          <span>Contagem de Status do tipo "Bom"</span>
+          <Chart type="polarArea" :data="satisfactoryStatusData" :options="barOptions" class="w-full md:w-30rem" />
+        </div>
+        
+      
+    </div>
+  </TabPanel>
+  <TabPanel header="Som">
+     
+    <div class="grid gap-8 justify-content-center" v-if="!dataLoading">
+
+      <div class="col-6 md:col-6 lg:col-4 justify-content-center align-content-center">
+        <p class="mb-2">Contagem de Status do tipo "Ruim"</p>
+        <GaugeChart :maxValue="200" :currentValue="lastsound" class=" flex justify-content-center" />
+        <p class="mt-4">
+          A ultima Aferição foi de {{ lastsound }}
+        </p>
+      </div>
+        
+        <div class="col-6 md:col-6 lg:col-4">
+          <span>Contagem de Status do tipo "Bom"</span>
+          <Chart type="polarArea" :data="goodStatusData" :options="barOptions" class="w-full md:w-30rem" />
+        </div>
+        
+      
+    </div>
+  </TabPanel>
+  <TabPanel header="Geral">
+     
+    <div class="grid gap-8 justify-content-center">
+
+      <div>
+
+        <Chart type="line" :data="data" :options="options" class="h-30rem flex justify-content-center"  id="linhageral"/>
+      </div>
+
+    </div>
+  </TabPanel>
+</TabView>
+</div>
+
+  
   <!--exportModal-->
   <Dialog v-model:visible="exportModal" :style="{ width: '650px' }" header="Adicionar Display" :modal="true"
     class="p-fluid">
@@ -112,11 +168,17 @@
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import { useToast } from "primevue/usetoast";
+import GaugeChart from '../components/gaugeChart.vue';
+
+
+
+
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale, CategoryScale, TimeScale);
   export default {
     name: 'Dashboard',
     props: ['display'],
+    components: {GaugeChart},
     setup(){
       const toast = useToast();
     },
@@ -132,13 +194,20 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
         filterendDate: null,
         dateFormat: 'yy-mm-dd',
         data: {},
+        lum: {},
+        temp: {},
+        somm:{},
         displayID: '',
         startDate: null,
         endDate: null,
+        lastlum: 0,
+        lastsound: 0,
+        lasttemp:0,
       statusData: {},
       goodStatusData: {},
       satisfactoryStatusData: {},
       badStatusData: {},
+      currentDose: 190,
       options: {
         responsive: true,
         scales: {
@@ -228,11 +297,14 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
         await axios.get(`/api/event/events?startDate=${formattedStartDate}&endDate=${formattedEndDate}&displayId=${this.displayID}`)
           .then(resp => {
             const labels = resp.data.map(item => item.date);
-        const luminosity = resp.data.map(item => item.luminosity);
-        const sound = resp.data.map(item => item.sound);
-        const temperature = resp.data.map(item => item.temperature);
+            const luminosity = resp.data.map(item => item.luminosity);
+            const sound = resp.data.map(item => item.sound);
+            const temperature = resp.data.map(item => item.temperature);
         
-        
+
+        this.lastsound = sound[sound.length - 1];
+        this.lastlum = luminosity[luminosity.length - 1];
+        this.lasttemp = temperature[temperature.length - 1];
 
         const statusCounts = {
           luminosity: { good: 0, satisfactory: 0, bad: 0 },
@@ -259,56 +331,88 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
           datasets: [
             {
               label: 'Luminosidade',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
               data: luminosity,
-              fill: true
+              fill: false
             },
             {
               label: 'Som',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
               data: sound,
               fill: true
             },
             {
               label: 'Temperatura',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              fill: true,
+              fill: false,
               data: temperature,
             },
           ],
         };
 
+       
+   
+        this.lum = {
+        labels,
+        datasets: [{
+          label: 'Luminosidade',
+          data: luminosity,
+          fill: false,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          tension: 0.1
+        }]
+      };
+
+     this.temp = {
+        labels,
+        datasets: [{
+          label: 'Temperatura',
+          data: temperature,
+          fill: false,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          tension: 0.1
+        }]
+      };
+
+      this.somm = {
+        labels,
+        datasets: [{
+          label: 'Som',
+          data: sound,
+          fill: false,
+          borderColor: 'rgba(54, 162, 235, 1)',
+          tension: 0.1
+        }]
+      };
+        
+
         
 
         this.goodStatusData = {
-          labels: ['Luminosidade', 'Som', 'Temperatura'],
+          labels: ['Ruim', 'Bom', 'Satisfatório'],
           datasets: [
             {
-              label: 'Bom',
+              label: 'Status do Som',
               
               borderWidth: 1,
               data: [
-                statusCounts.luminosity.good,
+                
+                statusCounts.sound.bad,
                 statusCounts.sound.good,
-                statusCounts.temperature.good
+                statusCounts.sound.satisfactory
               ]
             }
           ]
         };
 
         this.satisfactoryStatusData = {
-          labels: ['Luminosidade', 'Som', 'Temperatura'],
+          labels: ['Ruim', 'Bom', 'Satisfatório'],
           datasets: [
             {
-              label: 'Satisfatório',
+              label: 'Status da Temperatura',
              
               borderWidth: 1,
               data: [
-                statusCounts.luminosity.satisfactory,
-                statusCounts.sound.satisfactory,
+                
+                statusCounts.temperature.bad,
+                statusCounts.temperature.good,
                 statusCounts.temperature.satisfactory
               ]
             }
@@ -316,16 +420,16 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
         };
 
         this.badStatusData = {
-          labels: ['Luminosidade', 'Som', 'Temperatura'],
+          labels: ['Ruim', 'Bom', 'Satisfatório'],
           datasets: [
             {
-              label: 'Ruim',
+              label: 'Status da Luminosidade',
              
               borderWidth: 1,
               data: [
                 statusCounts.luminosity.bad,
-                statusCounts.sound.bad,
-                statusCounts.temperature.bad
+                statusCounts.luminosity.good,
+                statusCounts.luminosity.satisfactory
               ]
             }
           ]
@@ -399,8 +503,12 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
         const luminosity = resp.data.map(item => item.luminosity);
         const sound = resp.data.map(item => item.sound);
         const temperature = resp.data.map(item => item.temperature);
-        
-        
+
+        this.lastsound = sound[sound.length - 1];
+        this.lastlum = luminosity[luminosity.length - 1];
+        this.lasttemp = temperature[temperature.length - 1];
+
+       
 
         const statusCounts = {
           luminosity: { good: 0, satisfactory: 0, bad: 0 },
@@ -427,56 +535,83 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
           datasets: [
             {
               label: 'Luminosidade',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
               data: luminosity,
-              fill: true
+              fill: false
             },
             {
               label: 'Som',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',
               data: sound,
               fill: true
             },
             {
               label: 'Temperatura',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              fill: true,
+              fill: false,
               data: temperature,
             },
           ],
         };
 
-        
 
-        this.goodStatusData = {
-          labels: ['Luminosidade', 'Som', 'Temperatura'],
+        this.lum = {
+        labels,
+        datasets: [{
+          label: 'Luminosidade',
+          data: luminosity,
+          fill: false,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          tension: 0.1
+        }]
+      };
+
+this.temp = {
+        labels,
+        datasets: [{
+          label: 'Temperatura',
+          data: temperature,
+          fill: false,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          tension: 0.1
+        }]
+      };
+
+      this.somm = {
+        labels,
+        datasets: [{
+          label: 'Som',
+          data: sound,
+          fill: false,
+          borderColor: 'rgba(54, 162, 235, 1)',
+          tension: 0.1
+        }]
+      };
+      this.goodStatusData = {
+          labels: ['Ruim', 'Bom', 'Satisfatório'],
           datasets: [
             {
-              label: 'Bom',
+              label: 'Status do Som',
               
               borderWidth: 1,
               data: [
-                statusCounts.luminosity.good,
+                
+                statusCounts.sound.bad,
                 statusCounts.sound.good,
-                statusCounts.temperature.good
+                statusCounts.sound.satisfactory
               ]
             }
           ]
         };
 
         this.satisfactoryStatusData = {
-          labels: ['Luminosidade', 'Som', 'Temperatura'],
+          labels: ['Ruim', 'Bom', 'Satisfatório'],
           datasets: [
             {
-              label: 'Satisfatório',
+              label: 'Status da Temperatura',
              
               borderWidth: 1,
               data: [
-                statusCounts.luminosity.satisfactory,
-                statusCounts.sound.satisfactory,
+                
+                statusCounts.temperature.bad,
+                statusCounts.temperature.good,
                 statusCounts.temperature.satisfactory
               ]
             }
@@ -484,16 +619,16 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale,
         };
 
         this.badStatusData = {
-          labels: ['Luminosidade', 'Som', 'Temperatura'],
+          labels: ['Ruim', 'Bom', 'Satisfatório'],
           datasets: [
             {
-              label: 'Ruim',
+              label: 'Status da Luminosidade',
              
               borderWidth: 1,
               data: [
                 statusCounts.luminosity.bad,
-                statusCounts.sound.bad,
-                statusCounts.temperature.bad
+                statusCounts.luminosity.good,
+                statusCounts.luminosity.satisfactory
               ]
             }
           ]

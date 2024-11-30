@@ -37,11 +37,14 @@ import Avatar from 'primevue/avatar';
 import ToggleButton from 'primevue/togglebutton';
 import Chart from 'primevue/chart';
 import ProgressSpinner from 'primevue/progressspinner';
+import TabPanel from 'primevue/tabpanel';
+import TabView from 'primevue/tabview';
 
 const pinia = createPinia()
 const app = createApp(App);
 
-
+app.component('TabView', TabView);
+app.component('TabPanel', TabPanel)
 app.component('Chart', Chart)
 app.component('Avatar', Avatar)
 app.component('ProgressSpinner', ProgressSpinner)
